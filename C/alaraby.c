@@ -1747,3 +1747,157 @@ dqq// // #include <stdio.h>
 //         }
 //     }
 // }
+
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+// ================================================================
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define a node structure to store data and priority
+typedef struct Node {
+    int data; // Data element
+    int priority; // Priority level
+    struct Node *next; // Pointer to the next node
+    struct Node *prev; // Pointer to the previous node
+} Node;
+
+// Define a priority queue structure
+typedef struct PriorityQueue {
+    Node *front; // Pointer to the front node (highest priority)
+    Node *rear; // Pointer to the rear node (lowest priority)
+    int size; // Size of the priority queue
+} PriorityQueue;
+
+// Function to create an empty priority queue
+PriorityQueue *createPriorityQueue(int capacity) {
+    PriorityQueue *pq = malloc(sizeof(PriorityQueue));
+    pq->front = NULL;
+    pq->rear = NULL;
+    pq->size = 0;
+    return pq;
+}
+
+// Function to insert an element into the priority queue
+void insertPriorityQueue(PriorityQueue *pq, int data, int priority) {
+    // Create a new node with the given data and priority
+    Node *newNode = malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->priority = priority;
+
+    // If the queue is empty, make the new node both front and rear
+    if (pq->size == 0) {
+        pq->front = newNode;
+        pq->rear = newNode;
+    } else {
+        // Find the appropriate position for the new node based on priority
+        Node *current = pq->front;
+        while (current != NULL && current->priority > priority) {
+            current = current->next;
+        }
+
+        // Insert the new node before the current node
+        if (current == pq->front) {
+            newNode->next = pq->front;
+            pq->front = newNode;
+        } else {
+            newNode->next = current->prev;
+            current->prev = newNode;
+        }
+
+        // Update the previous pointer of the node behind the new node
+        if (current != NULL) {
+            current->prev = newNode;
+        }
+    }
+
+    // Update the rear pointer if the new node is added to the rear
+    if (current == NULL) {
+        pq->rear = newNode;
+    }
+
+    pq->size++;
+}
+
+// Function to delete the element with the highest priority (front of the queue)
+int deletePriorityQueue(PriorityQueue *pq) {
+    // Check if the queue is empty
+    if (pq->size == 0) {
+        return -1; // Error: Queue is empty
+    }
+
+    // Extract the data from the front node
+    int data = pq->front->data;
+
+    // Update the front and rear pointers accordingly
+    if (pq->size == 1) {
+        pq->front = NULL;
+        pq->rear = NULL;
+    } else {
+        pq->front = pq->front->next;
+        pq->front->prev = NULL;
+    }
+
+    pq->size--;
+    free(pq->front); // Free the deleted node
+
+    return data;
+}
+
+// Function to print the contents of the priority queue
+void printPriorityQueue(PriorityQueue *pq) {
+    printf("Priority Queue:\n");
+    Node *current = pq->front;
+    while (current != NULL) {
+        printf("Data: %d, Priority: %d\n", current->data, current->priority);
+        current = current->next;
+    }
+}
+
+int main() {
+    // Create an empty priority queue with a capacity of 10 elements
+    PriorityQueue *pq = createPriorityQueue(10);
+
+    // Insert elements into the priority queue
+    insertPriorityQueue(pq, 10, 2);
+    insertPriorityQueue(pq, 5, 1);
+    insertPriorityQueue(pq, 15, 3);
+    insertPriorityQueue(pq, 20, 4);
+
+    // Print the priority queue
+    printPriorityQueue(pq);
+
+    // Delete elements from the priority queue
+    printf("Deleted element: %d\n", deletePriorityQueue(pq));
+    printf("Deleted element: %d\n", deletePriorityQueue(pq));
+
+    // Print the remaining elements in the priority queue
+    printPriorityQueue(pq);
+
+    // Free the dynamically allocated memory
+    free(pq);
+
+    return 0;
+}
